@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,11 +9,13 @@
         .view {
             display: none;
         }
+
         .active {
             display: block;
         }
     </style>
 </head>
+
 <body>
     <div id="menuView" class="view active">
         <h1>Menú Principal</h1>
@@ -27,19 +30,25 @@
         <form id="registroForm">
             <label for="fecha">Fecha:</label>
             <input type="date" id="fecha" name="fecha" required><br><br>
-            
+
             <label for="hora">Hora:</label>
             <input type="time" id="hora" name="hora" required><br><br>
-            
+
+            <label for="brazo">Brazo:</label>
+            <select name="brazo" id="brazo">
+                <option value="Izq" selected>Izquierdo</option>
+                <option value="Der">Derecho</option>
+            </select><br><br>
+
             <label for="sistolica">Presión Sistólica:</label>
             <input type="number" id="sistolica" name="sistolica" required><br><br>
-            
+
             <label for="diastolica">Presión Diastólica:</label>
             <input type="number" id="diastolica" name="diastolica" required><br><br>
-            
+
             <label for="pulso">Pulso:</label>
             <input type="number" id="pulso" name="pulso" required><br><br>
-            
+
             <button type="submit">Guardar Registro</button>
         </form>
         <button id="volverMenuBtn">Volver al Menú</button>
@@ -52,6 +61,7 @@
                 <tr>
                     <th>Fecha</th>
                     <th>Hora</th>
+                    <th>Brazo</th>
                     <th>Presión Sistólica</th>
                     <th>Presión Diastólica</th>
                     <th>Pulso</th>
@@ -68,4 +78,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>

@@ -59,6 +59,7 @@ document.addEventListener("DOMContentLoaded", function() {
         
         const fecha = document.getElementById("fecha").value;
         const hora = document.getElementById("hora").value;
+        const brazo = document.getElementById("brazo").value;
         const sistolica = document.getElementById("sistolica").value;
         const diastolica = document.getElementById("diastolica").value;
         const pulso = document.getElementById("pulso").value;
@@ -66,6 +67,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const registro = {
             fecha,
             hora,
+            brazo,
             sistolica,
             diastolica,
             pulso
@@ -88,6 +90,7 @@ document.addEventListener("DOMContentLoaded", function() {
             row.innerHTML = `
                 <td>${registro.fecha}</td>
                 <td>${registro.hora}</td>
+                <td>${registro.brazo}</td>
                 <td>${registro.sistolica}</td>
                 <td>${registro.diastolica}</td>
                 <td>${registro.pulso}</td>
@@ -128,8 +131,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
         doc.text("Registros de Presión Arterial", 10, 20);
 
-        const headers = [["Fecha", "Hora", "Sistólica", "Diastólica", "Pulso"]];
-        const data = registros.map(registro => [registro.fecha, registro.hora, registro.sistolica, registro.diastolica, registro.pulso]);
+        const headers = [["Fecha", "Hora", "brazo", "Sistólica", "Diastólica", "Pulso"]];
+        const data = registros.map(registro => [registro.fecha, registro.hora, registro.brazo, registro.sistolica, registro.diastolica, registro.pulso]);
 
         doc.autoTable({
             head: headers,
