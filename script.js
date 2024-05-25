@@ -1,33 +1,41 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const menuView = document.getElementById("menuView");
     const registroView = document.getElementById("registroView");
     const registrosView = document.getElementById("registrosView");
     const form = document.getElementById("registroForm");
     const registrosTableBody = document.querySelector("#registrosTable tbody");
 
-    document.getElementById("nuevoRegistroBtn").addEventListener("click", function() {
+    document.getElementById("nuevoRegistroBtn").addEventListener("click", function () {
         mostrarVista("registroView");
         cargarFechaYHoraActual();
     });
 
-    document.getElementById("verRegistrosBtn").addEventListener("click", function() {
+    document.getElementById("verRegistrosBtn").addEventListener("click", function () {
         mostrarVista("registrosView");
         mostrarRegistros();
     });
 
-    document.getElementById("exportarExcelBtn").addEventListener("click", function() {
+    document.getElementById("exportarExcelBtn").addEventListener("click", function () {
         exportarAExcel();
     });
 
-    document.getElementById("generarPdfBtn").addEventListener("click", function() {
+    document.getElementById("generarPdfBtn").addEventListener("click", function () {
         generarPDF();
     });
 
-    document.getElementById("volverMenuBtn").addEventListener("click", function() {
+    document.getElementById("cargaDatosBtn").addEventListener("click", function () {
+        cargaDatos();
+    });
+
+    document.getElementById("guardaDatosBtn").addEventListener("click", function () {
+        guardaDatos();
+    });
+
+    document.getElementById("volverMenuBtn").addEventListener("click", function () {
         mostrarVista("menuView");
     });
 
-    document.getElementById("volverMenuBtn2").addEventListener("click", function() {
+    document.getElementById("volverMenuBtn2").addEventListener("click", function () {
         mostrarVista("menuView");
     });
 
@@ -42,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const ahora = new Date();
         const fecha = ahora.toISOString().split('T')[0];
         const hora = ahora.toTimeString().split(' ')[0].slice(0, 5);
-        
+
         const fechaInput = document.getElementById("fecha");
         const horaInput = document.getElementById("hora");
 
@@ -54,16 +62,16 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    form.addEventListener("submit", function(event) {
+    form.addEventListener("submit", function (event) {
         event.preventDefault();
-        
+
         const fecha = document.getElementById("fecha").value;
         const hora = document.getElementById("hora").value;
         const brazo = document.getElementById("brazo").value;
         const sistolica = document.getElementById("sistolica").value;
         const diastolica = document.getElementById("diastolica").value;
         const pulso = document.getElementById("pulso").value;
-        
+
         const registro = {
             fecha,
             hora,
@@ -72,11 +80,11 @@ document.addEventListener("DOMContentLoaded", function() {
             diastolica,
             pulso
         };
-        
+
         let registros = JSON.parse(localStorage.getItem("registros")) || [];
         registros.push(registro);
         localStorage.setItem("registros", JSON.stringify(registros));
-        
+
         mostrarVista("menuView");
     });
 
@@ -100,7 +108,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 
         document.querySelectorAll(".delete-button").forEach(button => {
-            button.addEventListener("click", function() {
+            button.addEventListener("click", function () {
                 const index = this.getAttribute("data-index");
                 if (confirm("¿Estás seguro de que deseas eliminar este registro?")) {
                     eliminarRegistro(index);
@@ -147,5 +155,57 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 
         doc.save("registros.pdf");
+    }
+
+    const guardaDatos = () => {
+
+        ///lo de generaBlob, pues el contenido venía como blob:contenidoEnBlob,
+        let texto = [];
+        texto.push(localStorage.getItem('registros'));
+        let contenidoEnBlob = new Blob(texto, {
+            type: 'text/plain'
+        });
+        ///
+        let reader = new FileReader();
+        reader.onload = (event) => {
+            let save = document.createElement('a');
+            save.href = event.target.result;
+            save.target = '_blank';
+            save.download = 'DatosTension.txt';
+            let clicEvent = new MouseEvent('click', {
+                'view': window,
+                'bubbles': true,
+                'cancelable': true
+            });
+            save.dispatchEvent(clicEvent);
+            (window.URL || window.webkitURL).revokeObjectURL(save.href);
+        };
+        reader.readAsDataURL(contenidoEnBlob);
+    };
+
+    const cargaDatos = () => {
+        var archivoInput = document.getElementById('fileData');
+
+        var archivo = archivoInput.files[0];
+        var lector = new FileReader();
+
+        lector.onload = function (event) {
+            var contenido = event.target.result;
+            if (confirm('¿Seguro que quieres cambiar los datos antiguos por los nuevos?')) {
+                try {
+                    let aux = JSON.parse(contenido);                
+                    if (aux[0].fecha !== undefined) {//debe tener al menos un dato 
+                        localStorage.setItem("registros", contenido);
+                        mostrarRegistros();
+                    } else {
+                        alert('El archivo no contiene datos o no tiene el formato correcto.\n No se carga.')
+                    }
+                } catch (error) {
+                    alert('No se ha cargado nada por error:\n' + error)
+                }
+            }
+        }
+
+        lector.readAsText(archivo);
     }
 });

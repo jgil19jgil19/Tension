@@ -5,24 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Presión Arterial</title>
-    <style>
-        .view {
-            display: none;
-        }
-
-        .active {
-            display: block;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    
+   
 </head>
 
 <body>
     <div id="menuView" class="view active">
         <h1>Menú Principal</h1>
         <button id="nuevoRegistroBtn">Nuevo Registro</button>
-        <button id="verRegistrosBtn">Ver Registros</button>
+        <button id="verRegistrosBtn">Ver Registros</button><br><br>
         <button id="exportarExcelBtn">Exportar a Excel</button>
-        <button id="generarPdfBtn">Generar PDF</button>
+        <button id="generarPdfBtn">Generar PDF</button><br><br>
+        <input id="fileData" type="file"><button id="cargaDatosBtn">carga los datos de un fichero</button><br>
+        <button id="guardaDatosBtn">Guarda los datos en un archivo</button>
     </div>
 
     <div id="registroView" class="view">
