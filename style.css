@@ -9,6 +9,17 @@ button {
   cursor: pointer;
 }
 
+select {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  background-color: #aa7a31;
+  color: #000;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
 input {
   font-size: 16px;
   font-weight: bold;
@@ -18,6 +29,14 @@ input {
   color: #000;
   border-radius: 5px;
   cursor: pointer;
+}
+
+td {
+  text-align: center;
+}
+
+.destacado {
+  font-weight: bold;
 }
 
 .view {

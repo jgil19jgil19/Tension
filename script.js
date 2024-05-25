@@ -8,6 +8,10 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("nuevoRegistroBtn").addEventListener("click", function () {
         mostrarVista("registroView");
         cargarFechaYHoraActual();
+        document.getElementById("brazo").value='Izq';
+        document.getElementById("sistolica").value='';
+        document.getElementById("diastolica").value='';
+        document.getElementById("pulso").value='';
     });
 
     document.getElementById("verRegistrosBtn").addEventListener("click", function () {
@@ -53,13 +57,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const fechaInput = document.getElementById("fecha");
         const horaInput = document.getElementById("hora");
-
-        if (!fechaInput.value) {
-            fechaInput.value = fecha;
-        }
-        if (!horaInput.value) {
+            //alert(fecha + hora.replace(':','-'))
+            fechaInput.value = fecha;        
             horaInput.value = hora;
-        }
+        
     }
 
     form.addEventListener("submit", function (event) {
@@ -99,8 +100,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td>${registro.fecha}</td>
                 <td>${registro.hora}</td>
                 <td>${registro.brazo}</td>
-                <td>${registro.sistolica}</td>
-                <td>${registro.diastolica}</td>
+                <td class="destacado">${registro.sistolica}</td>
+                <td class="destacado">${registro.diastolica}</td>
                 <td>${registro.pulso}</td>
                 <td><button class="delete-button" data-index="${registros.length - 7 + index}">Eliminar</button></td>
             `;
@@ -159,7 +160,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const guardaDatos = () => {
 
-        ///lo de generaBlob, pues el contenido venía como blob:contenidoEnBlob,
+        const ahora = new Date();
+        const fecha = ahora.toISOString().split('T')[0];
+        const hora = ahora.toTimeString().split(' ')[0].slice(0, 5).replace(':','-');
         let texto = [];
         texto.push(localStorage.getItem('registros'));
         let contenidoEnBlob = new Blob(texto, {
@@ -171,7 +174,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let save = document.createElement('a');
             save.href = event.target.result;
             save.target = '_blank';
-            save.download = 'DatosTension.txt';
+            save.download = 'DatosTension'+fecha+'-'+hora+'.txt';
             let clicEvent = new MouseEvent('click', {
                 'view': window,
                 'bubbles': true,
