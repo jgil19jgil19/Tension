@@ -73,6 +73,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const diastolica = document.getElementById("diastolica").value;
         const pulso = document.getElementById("pulso").value;
 
+        const modo = document.getElementById("modo").value;
+
         const registro = {
             fecha,
             hora,
@@ -81,10 +83,15 @@ document.addEventListener("DOMContentLoaded", function () {
             diastolica,
             pulso
         };
-
+        
         let registros = JSON.parse(localStorage.getItem("registros")) || [];
-        registros.push(registro);
+        if(modo==='annadir') registros.push(registro);
+        else{ //editar
+            registros[+modo]= registro;
+            document.getElementById("modo").value='annadir';
+        } 
         localStorage.setItem("registros", JSON.stringify(registros));
+
 
         mostrarVista("menuView");
     });
@@ -104,7 +111,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td class="destacado">${registro.sistolica}</td>
                 <td class="destacado">${registro.diastolica}</td>
                 <td>${registro.pulso}</td>
-                <td><button class="delete-button" data-index="${registros.length - index - 1}">Eliminar</button></td>
+                <td><button class="delete-button" data-index="${registros.length - index - 1}">Eliminar</button>
+                <button  class="edita-button" data-index="${registros.length - index - 1}" >Editar</button></td>
             `;
             registrosTableBody.appendChild(row);
         });
@@ -117,6 +125,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
         });
+        document.querySelectorAll(".edita-button").forEach(button => {
+            button.addEventListener("click", function () {
+                const index = this.getAttribute("data-index");
+                //if (confirm("¿Estás seguro de que deseas eliminar este registro?")) {
+                    editaRegistro(index);
+                //}
+            });
+        });
     }
 
     function eliminarRegistro(index) {
@@ -127,7 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function exportarAExcel() {
-        const registros = JSON.parse(localStorage.getItem("registros")) || [];
+        const registros = JSON.parse(localStorage.getItem("registros")).reverse() || [];
         const ws = XLSX.utils.json_to_sheet(registros);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Registros");
@@ -137,7 +153,7 @@ document.addEventListener("DOMContentLoaded", function () {
     async function generarPDF() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('p', 'pt', 'a4');
-        const registros = JSON.parse(localStorage.getItem("registros")) || [];
+        const registros = JSON.parse(localStorage.getItem("registros")).reverse() || [];
 
         doc.text("Registros de Presión Arterial", 10, 20);
 
@@ -211,5 +227,23 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         lector.readAsText(archivo);
+    }
+    const editaRegistro = (index) => {
+        mostrarVista("registroView");
+
+        //const fecha = document.getElementById("fecha").value;
+        //const hora = document.getElementById("hora").value;
+        //cargarFechaYHoraActual();
+        let registros = JSON.parse(localStorage.getItem("registros")) || [];
+
+        document.getElementById("fecha").value = registros[index].fecha;
+        document.getElementById("hora").value = registros[index].hora;
+        document.getElementById("brazo").value = registros[index].brazo;
+        document.getElementById("sistolica").value = registros[index].sistolica;
+        document.getElementById("diastolica").value = registros[index].diastolica;
+        document.getElementById("pulso").value = registros[index].pulso;
+
+        document.getElementById("modo").value = index;
+
     }
 });

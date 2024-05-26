@@ -35,6 +35,20 @@ td {
   text-align: center;
 }
 
+input[type="file"]::file-selector-button {
+  border: 2px solid #6c5ce7;
+  padding: 0.2em 0.4em;
+  border-radius: 0.2em;
+  background-color: #fe9bc4;
+  transition: 1s;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background-color: #e5ec81;
+  border: 2px solid #00cec9;
+}
+
+
 .destacado {
   font-weight: bold;
 }
@@ -46,4 +60,16 @@ td {
 .active {
   display: block;
 }
+
+.delete-button {
+  font-size: 12px;
+  padding: 7px 14px;
+  background-color: #e72207;
+}
+
+.edita-button{
+  font-size: 12px;
+  padding: 7px 14px;
+  background-color: #190cca;
+} 
 
