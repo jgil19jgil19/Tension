@@ -92,7 +92,8 @@ document.addEventListener("DOMContentLoaded", function () {
     function mostrarRegistros() {
         const registros = JSON.parse(localStorage.getItem("registros")) || [];
         registrosTableBody.innerHTML = "";
-        const ultimosRegistros = registros.slice(-7).reverse();
+        //const ultimosRegistros = registros.slice(-7).reverse();
+        const ultimosRegistros = registros.reverse();
 
         ultimosRegistros.forEach((registro, index) => {
             const row = document.createElement("tr");
@@ -103,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td class="destacado">${registro.sistolica}</td>
                 <td class="destacado">${registro.diastolica}</td>
                 <td>${registro.pulso}</td>
-                <td><button class="delete-button" data-index="${registros.length - 7 + index}">Eliminar</button></td>
+                <td><button class="delete-button" data-index="${registros.length - index - 1}">Eliminar</button></td>
             `;
             registrosTableBody.appendChild(row);
         });
