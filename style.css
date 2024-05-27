@@ -31,6 +31,12 @@ input {
   cursor: pointer;
 }
 
+th {
+  font-weight: bold;
+  text-align: center;
+  background-color: #ebb2c9;
+}
+
 td {
   text-align: center;
 }
@@ -47,7 +53,6 @@ input[type="file"]::file-selector-button:hover {
   background-color: #e5ec81;
   border: 2px solid #00cec9;
 }
-
 
 .destacado {
   font-weight: bold;

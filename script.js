@@ -2,8 +2,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const menuView = document.getElementById("menuView");
     const registroView = document.getElementById("registroView");
     const registrosView = document.getElementById("registrosView");
+    const resumenView=document.getElementById("resumenView");
     const form = document.getElementById("registroForm");
     const registrosTableBody = document.querySelector("#registrosTable tbody");
+    const mediaTableBody = document.querySelector("#mediaTable tbody");
 
     document.getElementById("nuevoRegistroBtn").addEventListener("click", function () {
         mostrarVista("registroView");
@@ -27,6 +29,12 @@ document.addEventListener("DOMContentLoaded", function () {
         generarPDF();
     });
 
+    document.getElementById("generaResumenBtn").addEventListener("click", function () {
+        mostrarVista("resumenView");
+        mostrarPromedios(processRecords(JSON.parse(localStorage.getItem("registros"))))
+        //mostrarRegistros();
+    });
+
     document.getElementById("cargaDatosBtn").addEventListener("click", function () {
         cargaDatos();
     });
@@ -43,10 +51,15 @@ document.addEventListener("DOMContentLoaded", function () {
         mostrarVista("menuView");
     });
 
+    document.getElementById("volverMenuBtn3").addEventListener("click", function () {
+        mostrarVista("menuView");
+    });
+
     function mostrarVista(vistaId) {
         menuView.classList.remove("active");
         registroView.classList.remove("active");
         registrosView.classList.remove("active");
+        resumenView.classList.remove("active");
         document.getElementById(vistaId).classList.add("active");
     }
 
@@ -134,6 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
     }
+
 
     function eliminarRegistro(index) {
         let registros = JSON.parse(localStorage.getItem("registros")) || [];
@@ -246,4 +260,116 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("modo").value = index;
 
     }
+
+    ///para crear resumen de datos en una toma.
+
+    const  mostrarPromedios = (promediados) => {
+        //const registros = JSON.parse(localStorage.getItem("registros")) || [];
+        mediaTableBody.innerHTML = "";
+        //const ultimosRegistros = registros.slice(-7).reverse();
+        //const ultimosRegistros = registros.reverse();
+        let alReves= promediados.reverse()
+
+        alReves.forEach((registro, index) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${registro.fecha}</td>
+                <td>${registro.hora}, [${registro.minutosDiferencia}]</td>
+                <td>${registro.brazo}</td>
+                <td class="destacado">${registro.sistolicaPromedio}</td>
+                <td class="destacado">${registro.diastolicaPromedio}</td>
+                <td>${registro.pulsoPromedio}</td>
+                <td>${registro.numeroRegistros}</td>
+            `;
+            mediaTableBody.appendChild(row);
+        });
+    }
+
+    function processRecords(records) {//alert(JSON.stringify(records))
+        // Parse and sort the records by date and time
+        records.forEach(record => {
+          record.datetime = new Date(`${record.fecha}T${record.hora}`);
+        });
+        records.sort((a, b) => a.datetime - b.datetime);
+      
+        let result = [];
+        let currentGroup = [];
+
+        /*let derIni={};
+        let izIni={};
+        records.forEach((r,i)=>{
+            if(r.brazo==='Der' && )
+        })*/
+      
+        function finalizeGroup() {
+          if (currentGroup.length > 0) {
+            let start = currentGroup[0].datetime;
+            let end = currentGroup[currentGroup.length - 1].datetime;
+            let brazo = currentGroup[0].brazo;
+            let systolicSum = 0;
+            let diastolicSum = 0;
+            let pulseSum = 0;
+      
+            currentGroup.forEach(record => {
+              systolicSum += +record.sistolica;
+              diastolicSum += +record.diastolica;
+              pulseSum += +record.pulso;
+            });
+      
+            let systolicAvg = systolicSum / currentGroup.length;
+            let diastolicAvg = diastolicSum / currentGroup.length;
+            let pulseAvg = pulseSum / currentGroup.length;
+            let timeDiff = (end - start) / (1000 * 60); // difference in minutes
+      
+            result.push({
+              fecha: currentGroup[0].fecha,
+              hora: currentGroup[0].hora,
+              minutosDiferencia: timeDiff,
+              brazo: brazo,
+              sistolicaPromedio: Math.round(systolicAvg),
+              diastolicaPromedio: Math.round(diastolicAvg),
+              pulsoPromedio: Math.round(pulseAvg),
+              numeroRegistros: currentGroup.length
+            });
+      
+            currentGroup = [];
+          }
+        }
+      
+        for (let i = 0; i < records.length; i++) {
+          if (currentGroup.length === 0) {
+            currentGroup.push(records[i]);
+          } else {
+            let firstRecord = currentGroup[0];
+            let timeDiff = (records[i].datetime - firstRecord.datetime) / (1000 * 60); // difference in minutes
+      
+            if (timeDiff <= 60 && records[i].brazo === firstRecord.brazo) {
+              currentGroup.push(records[i]);
+            } else {
+              finalizeGroup();
+              currentGroup.push(records[i]);
+            }
+          }
+        }
+      
+        finalizeGroup();
+        
+        return result;
+      }
+      
+      // Example usage:
+      /*const records = [
+        {"fecha":"2024-05-25","hora":"12:46","brazo":"Izq","sistolica":"100","diastolica":"20","pulso":"33"},
+        {"fecha":"2024-05-25","hora":"13:15","brazo":"Izq","sistolica":"110","diastolica":"25","pulso":"35"},
+        {"fecha":"2024-05-25","hora":"13:45","brazo":"Izq","sistolica":"105","diastolica":"22","pulso":"34"},
+        {"fecha":"2024-05-25","hora":"12:30","brazo":"Der","sistolica":"120","diastolica":"30","pulso":"40"},
+        {"fecha":"2024-05-25","hora":"13:30","brazo":"Der","sistolica":"125","diastolica":"35","pulso":"42"},
+        {"fecha":"2024-05-25","hora":"14:00","brazo":"Der","sistolica":"130","diastolica":"40","pulso":"45"}
+      ];
+      
+      console.log(processRecords(records));*/
+  
+
+      
+      
 });

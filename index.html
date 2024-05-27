@@ -17,6 +17,7 @@
         <button id="verRegistrosBtn">Ver Registros</button><br><br>
         <button id="exportarExcelBtn">Exportar a Excel</button>
         <button id="generarPdfBtn">Generar PDF</button><br><br>
+        <button id="generaResumenBtn">Generar resumen</button><br><br>
         <input id="fileData" type="file"><button id="cargaDatosBtn">carga los datos de un fichero</button><br>
         <button id="guardaDatosBtn">Guarda los datos en un archivo</button>
     </div>
@@ -70,6 +71,25 @@
             <tbody></tbody>
         </table>
         <button id="volverMenuBtn2">Volver al Menú</button>
+    </div>
+
+    <div id="resumenView" class="view">
+        <h1>Medias de registros guardados</h1>
+        <table id="mediaTable" border="1">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Brazo</th>
+                    <th>P. Sis. media</th>
+                    <th>P. Dias. media</th>
+                    <th>Pulso medio</th>
+                    <th>Nº medidas</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button id="volverMenuBtn3">Volver al Menú</button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
