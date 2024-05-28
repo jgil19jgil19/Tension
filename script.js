@@ -1,3 +1,5 @@
+let medias=[];//variable global que contendra las medias de agrupaciones de medidas, se usa para ponerlas en el pdf
+
 document.addEventListener("DOMContentLoaded", function () {
     const menuView = document.getElementById("menuView");
     const registroView = document.getElementById("registroView");
@@ -6,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("registroForm");
     const registrosTableBody = document.querySelector("#registrosTable tbody");
     const mediaTableBody = document.querySelector("#mediaTable tbody");
+
 
     document.getElementById("nuevoRegistroBtn").addEventListener("click", function () {
         mostrarVista("registroView");
@@ -27,6 +30,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("generarPdfBtn").addEventListener("click", function () {
         generarPDF();
+    });
+
+    document.getElementById("generarMediasPdfBtn").addEventListener("click", function () {
+        generarMediasPDF();
     });
 
     document.getElementById("generaResumenBtn").addEventListener("click", function () {
@@ -268,6 +275,8 @@ document.addEventListener("DOMContentLoaded", function () {
         mediaTableBody.innerHTML = "";
         //const ultimosRegistros = registros.slice(-7).reverse();
         //const ultimosRegistros = registros.reverse();
+
+        medias=promediados;//lo pasamos a la variable global medias
         let alReves= promediados.reverse()
 
         alReves.forEach((registro, index) => {
@@ -293,13 +302,7 @@ document.addEventListener("DOMContentLoaded", function () {
         records.sort((a, b) => a.datetime - b.datetime);
       
         let result = [];
-        let currentGroup = [];
-
-        /*let derIni={};
-        let izIni={};
-        records.forEach((r,i)=>{
-            if(r.brazo==='Der' && )
-        })*/
+        let currentGroup = [];      
       
         function finalizeGroup() {
           if (currentGroup.length > 0) {
@@ -329,45 +332,95 @@ document.addEventListener("DOMContentLoaded", function () {
               sistolicaPromedio: Math.round(systolicAvg),
               diastolicaPromedio: Math.round(diastolicAvg),
               pulsoPromedio: Math.round(pulseAvg),
-              numeroRegistros: currentGroup.length
+              numeroRegistros: currentGroup.length,
+              datetime: currentGroup[0].datetime
             });
       
             currentGroup = [];
           }
         }
+
+        let currentGroupDer=[];
+        let currentGroupIz=[];
       
         for (let i = 0; i < records.length; i++) {
-          if (currentGroup.length === 0) {
-            currentGroup.push(records[i]);
-          } else {
-            let firstRecord = currentGroup[0];
-            let timeDiff = (records[i].datetime - firstRecord.datetime) / (1000 * 60); // difference in minutes
-      
-            if (timeDiff <= 60 && records[i].brazo === firstRecord.brazo) {
-              currentGroup.push(records[i]);
-            } else {
-              finalizeGroup();
-              currentGroup.push(records[i]);
+            
+            if(records[i].brazo==='Der'){
+              if (currentGroupDer.length === 0) {
+                currentGroupDer.push(records[i]);
+              } else {
+                let firstRecord = currentGroupDer[0];
+                let timeDiff = (records[i].datetime - firstRecord.datetime) / (1000 * 60); // difference in minutes
+          
+                if (timeDiff <= 60) {
+                  currentGroupDer.push(records[i]);
+                } else {
+                  currentGroup=currentGroupDer;  
+                  finalizeGroup();
+                  currentGroupDer=currentGroup;
+                  currentGroupDer.push(records[i]);
+                }
+              }
             }
-          }
+            if(records[i].brazo==='Izq'){
+              if (currentGroupIz.length === 0) {
+                currentGroupIz.push(records[i]);
+              } else {
+                let firstRecord = currentGroupIz[0];
+                let timeDiff = (records[i].datetime - firstRecord.datetime) / (1000 * 60); // difference in minutes
+          
+                if (timeDiff <= 60) {
+                  currentGroupIz.push(records[i]);
+                } else {
+                  currentGroup=currentGroupIz;  
+                  finalizeGroup();
+                  currentGroupIz=currentGroup
+                  currentGroupIz.push(records[i]);
+                }
+              }
+            }
+           
         }
-      
-        finalizeGroup();
+        if(currentGroupDer.length>0){
+            currentGroup=currentGroupDer;
+            finalizeGroup();
+        }
+        if(currentGroupIz.length>0){
+            currentGroup=currentGroupIz;
+            finalizeGroup();
+        }
         
+        result.sort((a, b) => a.datetime - b.datetime);
+
         return result;
       }
+
+
       
-      // Example usage:
-      /*const records = [
-        {"fecha":"2024-05-25","hora":"12:46","brazo":"Izq","sistolica":"100","diastolica":"20","pulso":"33"},
-        {"fecha":"2024-05-25","hora":"13:15","brazo":"Izq","sistolica":"110","diastolica":"25","pulso":"35"},
-        {"fecha":"2024-05-25","hora":"13:45","brazo":"Izq","sistolica":"105","diastolica":"22","pulso":"34"},
-        {"fecha":"2024-05-25","hora":"12:30","brazo":"Der","sistolica":"120","diastolica":"30","pulso":"40"},
-        {"fecha":"2024-05-25","hora":"13:30","brazo":"Der","sistolica":"125","diastolica":"35","pulso":"42"},
-        {"fecha":"2024-05-25","hora":"14:00","brazo":"Der","sistolica":"130","diastolica":"40","pulso":"45"}
-      ];
-      
-      console.log(processRecords(records));*/
+      async function generarMediasPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'pt', 'a4');
+        const registros = medias;//la tomamos de la variable global
+
+        doc.text("Registros promedio de Presión Arterial", 10, 20);
+
+        const headers = [["Fecha", "Hora", "brazo", "P. Sis. media", "P. Dias. media", "Pulso medio", "Nº Medidas"]];
+        const data = registros.map(registro => [registro.fecha, registro.hora, registro.brazo, registro.sistolicaPromedio, registro.diastolicaPromedio, registro.pulsoPromedio, registro.numeroRegistros]);
+
+        doc.autoTable({
+            head: headers,
+            body: data,
+            startY: 30,
+            theme: 'grid',
+            styles: { fontSize: 10 },
+            margin: { top: 30 },
+            didDrawPage: function (data) {
+                doc.text(`Página ${doc.internal.getNumberOfPages()}`, data.settings.margin.left, doc.internal.pageSize.height - 10);
+            }
+        });
+
+        doc.save("MediasTension.pdf");
+    }
   
 
       
