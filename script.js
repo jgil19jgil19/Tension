@@ -405,7 +405,7 @@ document.addEventListener("DOMContentLoaded", function () {
         doc.text("Registros promedio de Presión Arterial", 10, 20);
 
         const headers = [["Fecha", "Hora", "brazo", "P. Sis. media", "P. Dias. media", "Pulso medio", "Nº Medidas"]];
-        const data = registros.map(registro => [registro.fecha, registro.hora, registro.brazo, registro.sistolicaPromedio, registro.diastolicaPromedio, registro.pulsoPromedio, registro.numeroRegistros]);
+        const data = registros.map(registro => [registro.fecha, registro.hora+', ['+registro.minutosDiferencia+']', registro.brazo, registro.sistolicaPromedio, registro.diastolicaPromedio, registro.pulsoPromedio, registro.numeroRegistros]);
 
         doc.autoTable({
             head: headers,
